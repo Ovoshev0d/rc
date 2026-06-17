@@ -100,8 +100,8 @@
 
     function loadChatHistory() {
         const messages = [
-            { name: "Алексей", text: "Привет! Как дела?", date: new Date(Date.now() - 86400000 * 1) }, // 1 день назад
-            { name: "Ольга", text: "Все отлично, спасибо! А у тебя?", date: new Date(Date.now() - 86400000 * 1) },
+            { name: "Алексей", text: "Привет! Как дела?", date: new Date(Date.now() - 86400000) }, // 1 день назад
+            { name: "Ольга", text: "Все отлично, спасибо! А у тебя?", date: new Date(Date.now() - 86400000) },
             { name: "Алексей", text: "Тоже хорошо, план на выходные?", date: new Date(Date.now() - 86400000 * 2) }, // 2 дня назад
             { name: "Ольга", text: "Хочу отдохнуть, может, погуляем?", date: new Date(Date.now() - 86400000 * 2) },
             { name: "Дмитрий", text: "Привет, команда!", date: new Date(Date.now() - 86400000 * 3) }, // 3 дня назад
@@ -109,27 +109,26 @@
         ];
 
         messages.forEach(message => {
-            const formattedDate = message.date.toLocaleDateString() + ' ' + message.date.toLocaleTimeString();
-            addMessage(message.name, message.text, formattedDate);
+            addMessage(message.name, message.text, message.date);
         });
     }
 
     nameInput.addEventListener("input", () => {
-        messageInput.disabled = !nameInput.value.trim();
-        sendButton.disabled = !nameInput.value.trim();
+        const isNameFilled = nameInput.value.trim() !== '';
+        messageInput.disabled = !isNameFilled;
+        sendButton.disabled = !isNameFilled;
     });
 
     sendButton.addEventListener("click", () => {
         const messageText = messageInput.value.trim();
         if (messageText && nameInput.value.trim()) {
-            const senderName = nameInput.value.trim();
-            addMessage(senderName, messageText);
+            addMessage(nameInput.value.trim(), messageText);
             messageInput.value = '';
             messageInput.focus();
         }
     });
 
-    function addMessage(name, messageText, date) {
+    function addMessage(name, messageText, date = new Date()) {
         const color = randomColor();
         const initials = name.split(' ').map(word => word.charAt(0)).join('').toUpperCase();
         const isOutgoing = (name === nameInput.value.trim());
@@ -144,7 +143,7 @@
 
         const messageContentDiv = document.createElement('div');
         messageContentDiv.classList.add('message-content');
-        messageContentDiv.innerHTML = `<strong>${name}</strong>: ${messageText} <span style="font-size: 0.8em; color: gray;">(${date ? date : ''})</span>`;
+        messageContentDiv.innerHTML = `<strong>${name}</strong>: ${messageText} <span style="font-size: 0.8em; color: gray;">(${date.toLocaleString()})</span>`;
 
         messageDiv.appendChild(avatarDiv);
         messageDiv.appendChild(messageContentDiv);
